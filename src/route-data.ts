@@ -1,7 +1,7 @@
 import Feature from 'ol/Feature'
 import Point from 'ol/geom/Point'
 import LineString from 'ol/geom/LineString'
-import { Style, Stroke, Circle, Fill, Text } from 'ol/style'
+import { Style, Stroke, Circle, Fill, Text, Icon } from 'ol/style'
 import { fromLonLat } from 'ol/proj'
 
 export interface RoutePoint {
@@ -1093,6 +1093,50 @@ function getRouteCoords(): [number, number][] {
     }
   }
   return coords
+}
+
+export function getRouteArrows(): Feature[] {
+  const coords = getRouteCoords()
+  if (coords.length < 2) return []
+
+  const arrowSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12,0 0,24 12,18 24,24" fill="#d4380d"/></svg>`
+  const src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(arrowSvg)
+  const features: Feature[] = []
+  const step = Math.max(1, Math.floor(coords.length / 50))
+  const totalDist = getTotalDistance(coords)
+
+  let accumulated = 0
+  for (let i = 1; i < coords.length; i++) {
+    const dx = coords[i][0] - coords[i - 1][0]
+    const dy = coords[i][1] - coords[i - 1][1]
+    accumulated += Math.sqrt(dx * dx + dy * dy)
+    if (i % step === 0 && accumulated > totalDist * 0.01) {
+      const angle = Math.atan2(dx, dy)
+      const feat = new Feature(new Point(fromLonLat(coords[i])))
+      feat.setStyle(
+        new Style({
+          image: new Icon({
+            src,
+            scale: 0.8,
+            rotation: angle,
+            opacity: 0.7,
+          }),
+        })
+      )
+      features.push(feat)
+    }
+  }
+  return features
+}
+
+function getTotalDistance(coords: [number, number][]): number {
+  let total = 0
+  for (let i = 1; i < coords.length; i++) {
+    const dx = coords[i][0] - coords[i - 1][0]
+    const dy = coords[i][1] - coords[i - 1][1]
+    total += Math.sqrt(dx * dx + dy * dy)
+  }
+  return total
 }
 
 export function getRouteLine(): Feature | null {
