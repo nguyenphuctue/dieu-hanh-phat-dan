@@ -1099,7 +1099,7 @@ export function getRouteArrows(): Feature[] {
   const coords = getRouteCoords()
   if (coords.length < 2) return []
 
-  const arrowSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12,0 0,24 12,18 24,24" fill="#d4380d"/></svg>`
+  const arrowSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12,0 0,24 12,18 24,24" fill="#2196F3"/></svg>`
   const src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(arrowSvg)
   const features: Feature[] = []
   const step = Math.max(1, Math.floor(coords.length / 50))
@@ -1146,13 +1146,13 @@ export function getRouteLine(): Feature | null {
   line.setStyle([
     new Style({
       stroke: new Stroke({
-        color: 'rgba(212, 56, 13, 0.2)',
+        color: 'rgba(33, 150, 243, 0.25)',
         width: 14,
       }),
     }),
     new Style({
       stroke: new Stroke({
-        color: '#ff6b35',
+        color: '#2196F3',
         width: 6,
       }),
     }),
